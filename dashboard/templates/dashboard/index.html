@@ -16,6 +16,29 @@
         </div>
     </div>
 </nav>
+<!-- Task Audit Section -->
+<div class="card shadow-sm p-4 mt-4">
+    <h5 class="card-title mb-3">Skill Audit & Learning Tasks</h5>
+    <ul class="list-group">
+        {% for task in tasks %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-bold">{{ task.course.title }}:</span>
+                    <span class="{% if task.is_completed %}text-decoration-line-through text-muted{% endif %}">
+                        {{ task.title }}
+                    </span>
+                </div>
+                <a href="{% url 'toggle_task' task.id %}" class="btn btn-sm {% if task.is_completed %}btn-secondary{% else %}btn-success{% endif %}">
+                    {% if task.is_completed %}Undo{% else %}Complete{% endif %}
+                </a>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted text-center py-3">
+                No learning tasks available yet. Add tasks from the Django admin portal!
+            </li>
+        {% endfor %}
+    </ul>
+</div>
     <div class="container">
         <h1 class="mb-4">Learning Analytics & Skill Audit</h1>
         

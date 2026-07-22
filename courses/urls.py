@@ -4,3 +4,10 @@ from . import views
 urlpatterns = [
     path('', views.course_list, name='course_list'),
 ]
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.course_list, name='course_list'),
+    path('task/<int:task_id>/toggle/', views.toggle_task, name='toggle_task'),
+]
