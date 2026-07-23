@@ -1,42 +1,270 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASALPS - Skill Audit & Learning Path</title>
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'course_list' %}">ASALPS</a>
-        <div class="navbar-nav">
-            <a class="nav-link active" href="{% url 'course_list' %}">Courses</a>
-            <a class="nav-link" href="{% url 'dashboard_index' %}">Dashboard</a>
-        </div>
-    </div>
-</nav>
+{% extends 'base.html' %}
+{% load static %}
 
-    <div class="container">
-        <h1 class="mb-4">Available Skill Learning Paths</h1>
-        <div class="row">
-            {% for course in courses %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <span class="badge bg-primary mb-2">{{ course.category }}</span>
-                            <h5 class="card-title">{{ course.title }}</h5>
-                            <p class="card-text text-muted">{{ course.description }}</p>
+{% block content %}
+<!-- Google Fonts & Chart.js -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    :root {
+        --navy-dark: #0f172a;
+        --navy-card: #1e293b;
+        --indigo-accent: #6366f1;
+        --indigo-hover: #4f46e5;
+        --slate-light: #f8fafc;
+        --slate-border: #e2e8f0;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--slate-light);
+        color: var(--text-dark);
+    }
+
+    /* Buttons */
+    .btn-indigo {
+        background-color: var(--indigo-accent);
+        color: white;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px 24px;
+        transition: all 0.2s ease;
+    }
+    .btn-indigo:hover {
+        background-color: var(--indigo-hover);
+        color: white;
+        transform: translateY(-2px);
+    }
+    .btn-outline-custom {
+        border: 1px solid var(--slate-border);
+        border-radius: 12px;
+        font-weight: 600;
+        color: var(--text-dark);
+        padding: 10px 24px;
+        background: white;
+    }
+    .btn-outline-custom:hover {
+        background-color: #f1f5f9;
+        color: var(--text-dark);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        padding: 70px 0 50px;
+    }
+    .hero-badge {
+        background-color: #e0e7ff;
+        color: var(--indigo-accent);
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 30px;
+        display: inline-block;
+    }
+    .hero-title {
+        font-size: 3.2rem;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -1px;
+    }
+    .hero-card {
+        background: var(--navy-dark);
+        border-radius: 24px;
+        color: white;
+        padding: 28px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+    }
+
+    /* Category Filter Tabs */
+    .filter-tab {
+        background: white;
+        border: 1px solid var(--slate-border);
+        color: var(--text-muted);
+        border-radius: 30px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .filter-tab.active, .filter-tab:hover {
+        background: var(--navy-dark);
+        color: white;
+        border-color: var(--navy-dark);
+    }
+
+    /* Course Cards */
+    .course-card {
+        background: white;
+        border: 1px solid var(--slate-border);
+        border-radius: 20px;
+        padding: 24px;
+        transition: all 0.25s ease;
+    }
+    .course-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+        border-color: var(--indigo-accent);
+    }
+    .category-badge {
+        background-color: #f1f5f9;
+        color: var(--indigo-accent);
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        border-radius: 8px;
+    }
+    .search-input-box {
+        border: 1px solid var(--slate-border);
+        border-radius: 14px;
+        padding: 14px 20px;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+</style>
+
+<!-- 1. HERO SECTION -->
+<section class="container hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-5 mb-lg-0">
+            <span class="hero-badge mb-3"><i class="bi bi-shield-check me-1"></i> Interactive Skill Audit System</span>
+            <h1 class="hero-title mb-3">Audit, Master & Validate Engineering Skills</h1>
+            <p class="text-muted fs-5 mb-4 pe-lg-3">
+                Track structured learning paths, toggle milestone tasks in real time, and gain clear visibility into your full-stack roadmap.
+            </p>
+            <div class="d-flex align-items-center gap-3">
+                <a href="#courses" class="btn btn-indigo shadow-sm">Explore Skill Paths</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-custom">
+                    <i class="bi bi-bar-chart-line-fill text-indigo me-1"></i> View Audit Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Live Metric Card -->
+        <div class="col-lg-6">
+            <div class="hero-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold">Live System Metrics</small>
+                        <h4 class="fw-bold mb-0 text-white">ASALPS Audit Summary</h4>
+                    </div>
+                    <span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-activity me-1"></i> Active</span>
+                </div>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="p-3 rounded-3" style="background: var(--navy-card);">
+                            <small class="text-muted d-block">Curated Tracks</small>
+                            <span class="fs-3 fw-bold text-white">8 Paths</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded-3" style="background: var(--navy-card);">
+                            <small class="text-muted d-block">Total Milestones</small>
+                            <span class="fs-3 fw-bold text-white">32 Tasks</span>
                         </div>
                     </div>
                 </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info">No learning paths created yet. Log into the admin portal to add some!</div>
+
+                <div class="p-3 rounded-3 mb-2" style="background: var(--navy-card);">
+                    <div class="d-flex justify-content-between text-white small mb-2">
+                        <span>Overall Skill Audit Progress</span>
+                        <span class="fw-bold text-indigo">34% Completed</span>
+                    </div>
+                    <div class="progress" style="height: 8px; background-color: #334155;">
+                        <div class="progress-bar bg-indigo" role="progressbar" style="width: 34%; background-color: var(--indigo-accent);" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
                 </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
-</body>
-</html>
+</section>
+
+<!-- 2. SEARCH & CATEGORY FILTERS -->
+<section id="courses" class="container py-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">Available Skill Learning Paths</h2>
+            <p class="text-muted mb-0">Select a category or search for specific technical modules.</p>
+        </div>
+        <!-- Live Search Input -->
+        <div class="mt-3 mt-md-0 position-relative" style="min-width: 280px;">
+            <input type="text" id="courseSearch" class="form-control search-input-box" placeholder="Search paths or technologies...">
+        </div>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <button class="filter-tab active" onclick="filterCategory('all', this)">All Paths</button>
+        <button class="filter-tab" onclick="filterCategory('Web Dev', this)">Web Dev</button>
+        <button class="filter-tab" onclick="filterCategory('Cloud & DevOps', this)">Cloud & DevOps</button>
+        <button class="filter-tab" onclick="filterCategory('Computer Science', this)">Computer Science</button>
+        <button class="filter-tab" onclick="filterCategory('Data Science', this)">Data Science</button>
+        <button class="filter-tab" onclick="filterCategory('AI & ML', this)">AI & ML</button>
+        <button class="filter-tab" onclick="filterCategory('Databases', this)">Databases</button>
+        <button class="filter-tab" onclick="filterCategory('Mobile Dev', this)">Mobile Dev</button>
+        <button class="filter-tab" onclick="filterCategory('Security', this)">Security</button>
+    </div>
+
+    <!-- 3. COURSE CARDS GRID -->
+    <div class="row g-4" id="courseGrid">
+        {% for course in courses %}
+        <div class="col-md-6 col-lg-4 course-item" data-category="{{ course.category }}">
+            <div class="course-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="category-badge">{{ course.category }}</span>
+                        <span class="small text-muted"><i class="bi bi-list-task me-1"></i> 4 Tasks</span>
+                    </div>
+                    <h5 class="fw-bold mb-2 course-title">{{ course.title }}</h5>
+                    <p class="text-muted small mb-3">{{ course.description }}</p>
+                </div>
+
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <span class="small text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Verified Path</span>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-custom btn-sm">Audit Path</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No courses available. Run database seeding to populate paths!</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Filter & Search Script -->
+<script>
+    function filterCategory(category, element) {
+        document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+        element.classList.add('active');
+
+        const items = document.querySelectorAll('.course-item');
+        items.forEach(item => {
+            if (category === 'all' || item.getAttribute('data-category') === category) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('courseSearch').addEventListener('keyup', function() {
+        const query = this.value.toLowerCase();
+        const items = document.querySelectorAll('.course-item');
+        items.forEach(item => {
+            const title = item.querySelector('.course-title').textContent.toLowerCase();
+            const category = item.getAttribute('data-category').toLowerCase();
+            if (title.includes(query) || category.includes(query)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
