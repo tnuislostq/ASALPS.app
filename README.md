@@ -47,4 +47,8 @@ ASALPS/
 ├── staticfiles/        # Compiled static assets served by WhiteNoise
 ├── manage.py           # Django CLI utility
 ├── requirements.txt    # Python dependencies
+<<<<<<< HEAD
 └── README.md           # Project documentation
+=======
+└── README.md           # Project documentation
+>>>>>>> e1bd114 (Expand dataset to 8 skill paths with 34% baseline progress audit)
